@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Hall — Encontra pavilhões. Junta jogadores. Joga.</title>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NRGMQZ1CZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NRGMQZ1CZJ');
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#080b2e;
+    --bg-mid:#141261;
+    --bg-purple:#2c1a8a;
+    --blue:#3d5cf5;
+    --blue-dark:#2540c9;
+    --blue-glow:rgba(61,92,245,0.45);
+    --gold:#f4b73f;
+    --ink:#ffffff;
+    --ink-muted:#b7bbe8;
+    --ink-faint:#7b7fb8;
+    --card:rgba(255,255,255,0.06);
+    --card-border:rgba(255,255,255,0.12);
+    --green:#3ecf7e;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(61,92,245,0.35), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(244,183,63,0.10), transparent 55%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 45%, var(--bg-purple) 100%);
+    color:var(--ink);
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.logo,.step-num{font-family:'Sora', sans-serif;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+  /* court-line texture, subtle */
+  .court-lines{
+    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.05;
+    background-image:
+      repeating-linear-gradient(90deg, transparent, transparent 119px, rgba(255,255,255,0.5) 120px),
+      repeating-linear-gradient(0deg, transparent, transparent 119px, rgba(255,255,255,0.5) 120px);
+  }
+
+  /* NAV */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(8,11,46,0.72); backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:74px;}
+  .logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.15rem; letter-spacing:0.02em;}
+  .logo svg{width:34px; height:34px;}
+  .nav-links{display:flex; align-items:center; gap:34px; font-size:0.95rem; color:var(--ink-muted); font-weight:500;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-cta{
+    background:linear-gradient(135deg, var(--blue), var(--blue-dark));
+    padding:11px 22px; border-radius:999px; font-weight:600; font-size:0.9rem;
+    box-shadow:0 6px 20px var(--blue-glow); transition:transform .15s ease, box-shadow .15s ease;
+    white-space:nowrap;
+  }
+  .nav-cta:hover{transform:translateY(-2px); box-shadow:0 10px 26px var(--blue-glow);}
+  @media(max-width:820px){ .nav-links{display:none;} }
+
+  /* HERO */
+  .hero{position:relative; z-index:1; padding:96px 0 80px;}
+  .hero .wrap{display:grid; grid-template-columns:1.05fr 0.95fr; gap:50px; align-items:center;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(244,183,63,0.12); border:1px solid rgba(244,183,63,0.35);
+    color:var(--gold); font-size:0.82rem; font-weight:600; padding:7px 14px; border-radius:999px;
+    margin-bottom:22px;
+  }
+  .eyebrow span{width:6px; height:6px; border-radius:50%; background:var(--gold);}
+  h1{font-size:2.9rem; line-height:1.14; font-weight:800; letter-spacing:-0.01em; margin-bottom:20px;}
+  h1 .accent{color:var(--blue); position:relative;}
+  .hero p.sub{font-size:1.1rem; color:var(--ink-muted); line-height:1.65; max-width:520px; margin-bottom:22px;}
+  .slogan{
+    font-family:'Sora', sans-serif; font-weight:700; font-size:1.25rem; letter-spacing:0.01em;
+    color:var(--gold); margin-bottom:32px; display:flex; align-items:center; gap:10px;
+  }
+  .slogan::before{content:''; width:26px; height:3px; border-radius:2px; background:linear-gradient(90deg, var(--gold), var(--blue)); display:inline-block;}
+  .slogan .bang{color:var(--blue);}
+  .cta-row{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn-primary{
+    background:linear-gradient(135deg, var(--blue), var(--blue-dark));
+    padding:16px 28px; border-radius:999px; font-weight:700; font-size:1rem;
+    box-shadow:0 10px 30px var(--blue-glow); transition:transform .15s ease, box-shadow .15s ease;
+    display:inline-block;
+  }
+  .btn-primary:hover{transform:translateY(-3px); box-shadow:0 14px 34px var(--blue-glow);}
+  .btn-secondary{
+    padding:16px 28px; border-radius:999px; font-weight:700; font-size:1rem;
+    border:1.5px solid rgba(255,255,255,0.25); color:var(--ink);
+    transition:background .15s ease, border-color .15s ease;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-secondary:hover{background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.45);}
+  .trust-line{margin-top:26px; font-size:0.85rem; color:var(--ink-faint); display:flex; align-items:center; gap:10px;}
+
+  /* Hero lobby card (signature element) */
+  .lobby-card{
+    background:linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:22px; padding:26px; backdrop-filter:blur(10px);
+    box-shadow:0 30px 60px rgba(6,8,40,0.55);
+    animation:float 6s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);}}
+  .lobby-card-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;}
+  .lobby-title{font-family:'Sora',sans-serif; font-weight:700; font-size:1.15rem;}
+  .lobby-tag{display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--green); font-weight:600;}
+  .lobby-tag span{width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green);}
+  .lobby-meta{font-size:0.82rem; color:var(--ink-faint); margin-bottom:16px;}
+  .avatars{display:flex; margin-bottom:18px;}
+  .avatars .av{
+    width:38px; height:38px; border-radius:50%; margin-left:-10px; border:2px solid var(--bg-mid);
+    display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700;
+  }
+  .avatars .av:first-child{margin-left:0;}
+  .av.filled{background:linear-gradient(135deg,#5b7cfa,#2540c9); color:#fff;}
+  .av.empty{background:rgba(255,255,255,0.08); color:var(--ink-faint); border-style:dashed;}
+  .lobby-chat{
+    background:rgba(0,0,0,0.25); border-radius:12px; padding:12px 14px; font-size:0.78rem; color:var(--ink-muted);
+    line-height:1.7; margin-bottom:16px;
+  }
+  .lobby-chat b{color:var(--ink); font-weight:600;}
+  .lobby-bottom{display:flex; justify-content:space-between; align-items:center;}
+  .lobby-price{font-family:'Sora',sans-serif; font-weight:700; font-size:1.05rem;}
+  .lobby-price span{color:var(--ink-faint); font-weight:500; font-size:0.78rem;}
+  .lobby-btn{background:var(--gold); color:#2a1c04; font-weight:700; font-size:0.85rem; padding:9px 18px; border-radius:999px;}
+
+  /* SECTIONS shared */
+  section{position:relative; z-index:1; padding:90px 0;}
+  .section-head{max-width:600px; margin-bottom:56px;}
+  .section-head .kicker{color:var(--blue); font-weight:700; font-size:0.85rem; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px; display:block;}
+  .section-head h2{font-size:2.1rem; font-weight:800; line-height:1.25;}
+  .section-head p{color:var(--ink-muted); margin-top:14px; font-size:1.02rem; line-height:1.6;}
+  .center{text-align:center; margin-left:auto; margin-right:auto;}
+
+  /* WHY / PROBLEM */
+  .why{background:rgba(255,255,255,0.025); border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06);}
+  .why-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;}
+  .why-list{display:flex; flex-direction:column; gap:22px;}
+  .why-item{display:flex; gap:16px;}
+  .why-item .x{
+    flex-shrink:0; width:34px; height:34px; border-radius:10px; background:rgba(224,82,90,0.14);
+    color:#e0525a; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem;
+  }
+  .why-item p{color:var(--ink-muted); font-size:0.98rem; line-height:1.55; padding-top:5px;}
+  .why-item strong{color:var(--ink); display:block; margin-bottom:2px; font-family:'Sora',sans-serif; font-size:1rem;}
+
+  /* STEPS */
+  .steps-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
+  .step-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:18px; padding:32px 26px;
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .step-card:hover{transform:translateY(-6px); border-color:rgba(61,92,245,0.5);}
+  .step-num{font-size:2.3rem; font-weight:800; color:rgba(255,255,255,0.14); margin-bottom:14px;}
+  .step-card h3{font-family:'Sora',sans-serif; font-size:1.15rem; margin-bottom:10px;}
+  .step-card p{color:var(--ink-muted); font-size:0.92rem; line-height:1.6;}
+
+  /* FEATURES */
+  .features-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:22px;}
+  .feature-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px; padding:26px 22px;
+    transition:transform .2s ease, background .2s ease;
+  }
+  .feature-card:hover{transform:translateY(-4px); background:rgba(255,255,255,0.09);}
+  .feature-icon{width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; margin-bottom:16px;}
+  .feature-icon svg{width:22px; height:22px;}
+  .feature-card h3{font-family:'Sora',sans-serif; font-size:1.02rem; margin-bottom:8px;}
+  .feature-card p{color:var(--ink-muted); font-size:0.88rem; line-height:1.55;}
+  @media(max-width:980px){ .features-grid{grid-template-columns:repeat(2,1fr);} }
+
+  /* PREVIEW GALLERY */
+  .preview{background:rgba(0,0,0,0.15);}
+  .preview-head-row{display:flex; align-items:flex-end; justify-content:space-between; gap:20px;}
+  .preview-arrows{display:flex; gap:10px; flex-shrink:0; margin-bottom:56px;}
+  .preview-arrow{
+    width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.06); color:var(--ink); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .preview-arrow:hover{background:rgba(61,92,245,0.25); border-color:var(--blue); transform:translateY(-2px);}
+  .preview-arrow:active{transform:translateY(0);}
+  .preview-arrow svg{width:18px; height:18px;}
+  .preview-arrow.disabled{opacity:0.35; pointer-events:none;}
+  .preview-scroll-wrap{position:relative;}
+  .preview-scroll{
+    display:flex; gap:22px; overflow-x:auto; padding-bottom:20px; scroll-snap-type:x mandatory;
+    -ms-overflow-style:none; scrollbar-width:none; scroll-behavior:smooth;
+  }
+  .preview-scroll::-webkit-scrollbar{display:none;}
+  .preview-fade{
+    position:absolute; top:0; bottom:20px; pointer-events:none; z-index:2;
+  }
+  .preview-fade.left{left:0; background:linear-gradient(90deg, var(--bg-mid), transparent);}
+  .preview-fade.right{right:0; background:linear-gradient(-90deg, var(--bg-mid), transparent);}
+  @media(max-width:820px){ .preview-fade{display:none;} }
+  .preview-item{flex:0 0 auto; width:340px; scroll-snap-align:start;}
+  .browser-frame{
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:14px; overflow:hidden;
+    box-shadow:0 24px 50px rgba(0,0,0,0.4);
+  }
+  .browser-bar{display:flex; gap:6px; padding:10px 12px; background:rgba(0,0,0,0.25);}
+  .browser-bar span{width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,0.18);}
+  .browser-frame img{width:100%; display:block; cursor:zoom-in; transition:filter .2s ease;}
+  .browser-frame:hover img{filter:brightness(1.05);}
+  .preview-caption{margin-top:14px; font-size:0.9rem; color:var(--ink-muted); font-weight:500;}
+  .preview-caption b{color:var(--ink); display:block; font-family:'Sora',sans-serif; font-size:0.98rem; margin-bottom:2px;}
+
+  /* LIGHTBOX */
+  .lightbox{
+    position:fixed; inset:0; z-index:100; background:rgba(4,5,26,0.92); backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center; padding:40px; flex-direction:column;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:min(88vw, 720px); max-height:78vh; border-radius:14px; box-shadow:0 30px 70px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.12);}
+  .lightbox-caption{color:var(--ink-muted); font-size:0.95rem; margin-top:18px; text-align:center;}
+  .lightbox-caption b{color:var(--ink); font-family:'Sora',sans-serif;}
+  .lightbox-close{
+    position:absolute; top:26px; right:30px; width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:var(--ink);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s ease;
+  }
+  .lightbox-close:hover{background:rgba(255,255,255,0.18);}
+  .lightbox-nav{
+    position:absolute; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%;
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:var(--ink);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s ease;
+  }
+  .lightbox-nav:hover{background:rgba(61,92,245,0.35); border-color:var(--blue);}
+  .lightbox-nav.prev{left:24px;}
+  .lightbox-nav.next{right:24px;}
+  @media(max-width:640px){
+    .lightbox-nav{width:38px; height:38px;}
+    .lightbox-nav.prev{left:8px;} .lightbox-nav.next{right:8px;}
+    .lightbox-close{top:14px; right:14px;}
+  }
+
+  /* FINAL CTA */
+  .final-cta{
+    background:linear-gradient(135deg, rgba(61,92,245,0.18), rgba(44,26,138,0.4));
+    border:1px solid rgba(61,92,245,0.3); border-radius:28px; padding:64px 48px; text-align:center;
+    position:relative; overflow:hidden;
+  }
+  .final-cta::before{
+    content:''; position:absolute; width:400px; height:400px; border-radius:50%;
+    background:radial-gradient(circle, rgba(244,183,63,0.18), transparent 70%);
+    top:-150px; right:-100px;
+  }
+  .final-cta h2{font-size:2rem; font-weight:800; margin-bottom:16px; position:relative;}
+  .final-cta p{color:var(--ink-muted); max-width:520px; margin:0 auto 32px; font-size:1.02rem; line-height:1.6; position:relative;}
+  .final-cta .cta-row{justify-content:center; position:relative;}
+  .discord-icon{width:20px; height:20px;}
+
+  /* FOOTER */
+  footer{border-top:1px solid rgba(255,255,255,0.08); padding:40px 0;}
+  footer .wrap{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
+  .footer-links{display:flex; gap:26px; font-size:0.88rem; color:var(--ink-faint);}
+  .footer-links a:hover{color:var(--ink);}
+  .foot-copy{font-size:0.82rem; color:var(--ink-faint);}
+  .logo-group{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .foot-slogan{font-size:0.82rem; color:var(--ink-faint); font-style:italic; padding-left:14px; border-left:1px solid rgba(255,255,255,0.15);}
+
+  /* reveal animation */
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  @media(max-width:900px){
+    .hero .wrap{grid-template-columns:1fr;}
+    .why-grid{grid-template-columns:1fr;}
+    .steps-grid{grid-template-columns:1fr;}
+    .features-grid{grid-template-columns:1fr 1fr;}
+    h1{font-size:2.2rem;}
+    .final-cta{padding:48px 24px;}
+    .preview-head-row{flex-direction:column; align-items:flex-start;}
+    .preview-arrows{margin-bottom:24px;}
+  }
+  @media(prefers-reduced-motion: reduce){
+    .lobby-card{animation:none;}
+    .reveal{opacity:1; transform:none; transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="court-lines"></div>
+
+<nav>
+  <div class="wrap">
+    <a href="#top" class="logo-link">
+      <div class="logo">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="url(#g1)" stroke-width="2.5"/>
+          <path d="M20 2 V38 M2 20 H38 M6 8 C14 16 26 16 34 8 M6 32 C14 24 26 24 34 32" stroke="url(#g1)" stroke-width="1.6" fill="none"/>
+          <defs><linearGradient id="g1" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#f4b73f"/><stop offset="1" stop-color="#3d5cf5"/></linearGradient></defs>
+        </svg>
+        GAME HALL
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#quem-somos">Quem somos</a>
+      <a href="#funcionalidades">Funcionalidades</a>
+      <a href="#preview">Preview</a>
+      <a href="#comunidade">Comunidade</a>
+    </div>
+    <a href="#form" class="nav-cta">Quero acompanhar</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow"><span></span>Em desenvolvimento</div>
+      <h1>Marca o pavilhão.<br>Junta os jogadores.<br><span class="accent">Aparece e joga.</span></h1>
+      <p class="sub">A Game Hall reúne todos os pavilhões desportivos numa só plataforma. Cria lobbies públicos ou privados, convida jogadores, conversa no chat do grupo e divide o pagamento automaticamente <br>Acaba com os grupos de WhatsApp intermináveis, ligações a 5 pavilhões diferentes e correr atrás de quem não pagou <br><b>O teu jogo começa aqui!!!</b></p>
+      <div class="slogan">O teu jogo começa aqui<span class="bang">!!</span></div>
+      <div class="cta-row">
+        <a href="#form" class="btn-primary">Quero acompanhar o desenvolvimento</a>
+        <a href="#comunidade" class="btn-secondary">
+          <svg class="discord-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.01c.12.099.246.197.373.291a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.892.076.076 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.955 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+          Entrar na comunidade
+        </a>
+      </div>
+      <div class="trust-line">Todos os pavilhões, todas as modalidades, um só lugar</div>
+    </div>
+
+    <div class="lobby-card">
+      <div class="lobby-card-top">
+        <div>
+          <div class="lobby-title">5 × 5 dos Mancos</div>
+          <div class="lobby-meta">Pavilhão Desportivo da Meadela · 15€/h</div>
+        </div>
+        <div class="lobby-tag"><span></span>Público</div>
+      </div>
+      <div class="avatars">
+        <div class="av filled">PC</div>
+        <div class="av filled">AC</div>
+        <div class="av filled">JL</div>
+        <div class="av filled">JC</div>
+        <div class="av filled">MC</div>
+        <div class="av filled">SB</div>
+        <div class="av empty">?</div>
+        <div class="av empty">?</div>
+        <div class="av empty">?</div>
+        <div class="av empty">?</div>
+      </div>
+      <div class="lobby-chat">
+        <div><b>Jorge:</b> Tenho mais um rapaz para vir</div>
+        <div><b>Simão:</b> O que é isto?</div>
+        <div><b>Paula:</b> Toca a pagar pessoal 🔥</div>
+      </div>
+      <div class="lobby-bottom">
+        <div class="lobby-price">6 / 10 <span>jogadores</span></div>
+        <div class="lobby-btn"><a href="#form">Entrar no lobby</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="quem-somos">
+  <div class="wrap why-grid">
+    <p>Area que fala sobre a equipa de desenvolvimento e como surgiu a ideia<br><b>Em desenvolvimento...</b></p>
+  </div>
+</section>
+
+<section class="why reveal" id="porque">
+  <div class="wrap why-grid">
+    <div>
+      <span class="section-head kicker">Porquê o Game Hall</span>
+      <h2>Marcar um jogo com amigos não devia ser o trabalho mais difícil da semana</h2>
+    </div>
+    <div class="why-list">
+      <div class="why-item">
+        <div class="x">✕</div>
+        <p><strong>Sem grupos de WhatsApp intermináveis</strong>Já sabemos: "quem falta pagar?", "confirma quem vai", repetido todas as semanas.</p>
+      </div>
+      <div class="why-item">
+        <div class="x">✕</div>
+        <p><strong>Sem ligar a 5 pavilhões diferentes</strong>Disponibilidade, preços e comodidades dispersos, sem forma fácil de comparar.</p>
+      </div>
+      <div class="why-item">
+        <div class="x">✕</div>
+        <p><strong>Sem correr atrás de quem não pagou</strong>A divisão do valor fica resolvida logo na criação do lobby — igual para todos ou por conta do organizador.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="como-funciona">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="kicker">Como funciona</span>
+      <h2>Três passos, sem complicações</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <div class="step-num">01</div>
+        <h3>Procura o teu pavilhão</h3>
+        <p>Filtra por distrito, concelho, freguesia ou modalidade e vê disponibilidade, preços e comodidades num só sítio.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">02</div>
+        <h3>Cria ou junta-te a um lobby</h3>
+        <p>Define quantos jogadores faltam, torna o lobby público ou privado, e convida amigos diretamente.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">03</div>
+        <h3>Combina no chat e joga</h3>
+        <p>Combina os detalhes no chat do lobby, escolham como dividir o pagamento, e apareçam para jogar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="funcionalidades">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="kicker">Funcionalidades</span>
+      <h2>Feito para quem só quer jogar</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h3>Todos os pavilhões, um só lugar</h3>
+        <p>Compara preços, comodidades e avaliações de pavilhões perto de ti.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg></div>
+        <h3>Lobbies públicos ou privados</h3>
+        <p>Junta jogadores à tua volta ou fecha o jogo só para o teu grupo.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+        <h3>Chat integrado no lobby</h3>
+        <p>Combina os detalhes do jogo sem sair da app nem trocar de contacto.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+        <h3>Pagamento à tua escolha</h3>
+        <p>Divide o valor de forma igual pelos jogadores ou paga tudo tu — decides na hora de criar o lobby.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="preview" id="preview">
+  <div class="wrap">
+    <div class="preview-head-row">
+      <div class="section-head">
+        <span class="kicker">Preview</span>
+        <h2>Um vislumbre do que estamos a construir</h2>
+        <p>Protótipo em desenvolvimento <br> O design final pode e deve mudar com o vosso feedback.</p>
+      </div>
+      <div class="preview-arrows">
+        <button class="preview-arrow" id="prevArrow" aria-label="Ver imagem anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="preview-arrow" id="nextArrow" aria-label="Ver imagem seguinte">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="preview-scroll-wrap">
+      <div class="preview-fade left"></div>
+      <div class="preview-fade right"></div>
+      <div class="preview-scroll" id="previewScroll">
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="assets/home.png" alt="Página inicial do Game Hall" class="lightbox-trigger" data-title="Página inicial" data-desc="Pavilhões em destaque perto de ti"></div>
+          <div class="preview-caption"><b>Página inicial</b>Pavilhões em destaque perto de ti</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="assets/search.png" alt="Procura de pavilhões" class="lightbox-trigger" data-title="Procurar pavilhão" data-desc="Filtra por concelho, freguesia e modalidade"></div>
+          <div class="preview-caption"><b>Procurar pavilhão</b>Filtra por concelho, freguesia e modalidade</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="assets/details.png" alt="Detalhe do pavilhão" class="lightbox-trigger" data-title="Detalhe do pavilhão" data-desc="Horários, comodidades e avaliações"></div>
+          <div class="preview-caption"><b>Detalhe do pavilhão</b>Horários, comodidades e avaliações</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="assets/lobbies.png" alt="Lobbies abertos" class="lightbox-trigger" data-title="Lobbies abertos" data-desc="Junta-te a um jogo perto de ti"></div>
+          <div class="preview-caption"><b>Lobbies abertos</b>Junta-te a um jogo perto de ti</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="assets/lobby.png" alt="Lobby com chat" class="lightbox-trigger" data-title="Dentro do lobby" data-desc="Chat, convites e pagamento"></div>
+          <div class="preview-caption"><b>Dentro do lobby</b>Chat, convites e pagamento</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="assets/profile.png" alt="Perfil do utilizador" class="lightbox-trigger" data-title="O teu perfil" data-desc="Histórico de reservas e parceiros de jogo"></div>
+          <div class="preview-caption"><b>O teu perfil</b>Histórico de reservas e parceiros de jogo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="comunidade" style="padding-top:0;">
+  <div class="wrap">
+    <div class="final-cta reveal" id="form">
+      <h2>Ajuda-nos a construir o Game Hall</h2>
+      <p>Estamos a decidir onde e como lançar. Diz-nos de onde és e o que procuras leva 2 minutos e ajuda-nos a tomar as decisões certas.<br>Ajuda-nos tambem a decidir o design final e a priorizar funcionalidades. Junta-te à nossa comunidade no Discord e dá-nos feedback sobre o que queres ver na versão final.
+</p>
+      <div class="cta-row">
+        <a href="https://www.youtube.com/watch?v=9aMh5a5tLMk" target="_blank" rel="noopener" class="btn-primary">Quero acompanhar o desenvolvimento</a>
+        <a href="https://discord.gg/SUBSTITUIR-PELO-TEU-LINK" target="_blank" rel="noopener" class="btn-secondary">
+          <svg class="discord-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.01c.12.099.246.197.373.291a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.892.076.076 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.955 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+          Entrar no Discord
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="#top" class="logo-link">
+      <div class="logo" style="font-size:1rem;">
+        <svg viewBox="0 0 40 40" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="url(#g2)" stroke-width="2.5"/>
+          <path d="M20 2 V38 M2 20 H38 M6 8 C14 16 26 16 34 8 M6 32 C14 24 26 24 34 32" stroke="url(#g2)" stroke-width="1.6" fill="none"/>
+          <defs><linearGradient id="g2" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#f4b73f"/><stop offset="1" stop-color="#3d5cf5"/></linearGradient></defs>
+        </svg>
+        GAME HALL
+      </div>
+    </a>
+    <div class="footer-links">
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#quem-somos">Quem somos</a>
+      <a href="#funcionalidades">Funcionalidades</a>
+      <a href="https://discord.gg/SUBSTITUIR-PELO-TEU-LINK" target="_blank" rel="noopener">Discord</a>
+      <a href="mailto:game.hallhg@gmail.com">Contacto</a>
+    </div>
+    <div class="foot-copy">© 2026 Game Hall.</div>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Fechar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Imagem anterior">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav next" id="lightboxNext" aria-label="Imagem seguinte">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+  <div class="lightbox-caption"><b id="lightboxTitle"></b><br><span id="lightboxDesc"></span></div>
+</div>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal, .step-card, .feature-card');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.15});
+  revealEls.forEach(el=>{ el.classList.add('reveal'); io.observe(el); });
+
+  // Preview gallery arrows
+  const scrollEl = document.getElementById('previewScroll');
+  const prevArrow = document.getElementById('prevArrow');
+  const nextArrow = document.getElementById('nextArrow');
+  function scrollByCard(dir){
+    const card = scrollEl.querySelector('.preview-item');
+    const gap = 22;
+    const distance = (card ? card.offsetWidth : 340) + gap;
+    scrollEl.scrollBy({ left: dir * distance, behavior: 'smooth' });
+  }
+  prevArrow.addEventListener('click', ()=> scrollByCard(-1));
+  nextArrow.addEventListener('click', ()=> scrollByCard(1));
+  function updateArrowState(){
+    const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth - 4;
+    prevArrow.classList.toggle('disabled', scrollEl.scrollLeft <= 4);
+    nextArrow.classList.toggle('disabled', scrollEl.scrollLeft >= maxScroll);
+  }
+  scrollEl.addEventListener('scroll', updateArrowState);
+  window.addEventListener('resize', updateArrowState);
+  updateArrowState();
+
+  // Lightbox
+  const triggers = Array.from(document.querySelectorAll('.lightbox-trigger'));
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxTitle = document.getElementById('lightboxTitle');
+  const lightboxDesc = document.getElementById('lightboxDesc');
+  let currentIndex = 0;
+
+  function openLightbox(index){
+    currentIndex = index;
+    const t = triggers[currentIndex];
+    lightboxImg.src = t.src;
+    lightboxImg.alt = t.alt;
+    lightboxTitle.textContent = t.dataset.title;
+    lightboxDesc.textContent = t.dataset.desc;
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function showRelative(dir){
+    currentIndex = (currentIndex + dir + triggers.length) % triggers.length;
+    openLightbox(currentIndex);
+  }
+
+  triggers.forEach((img, i) => img.addEventListener('click', () => openLightbox(i)));
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lightboxPrev').addEventListener('click', () => showRelative(-1));
+  document.getElementById('lightboxNext').addEventListener('click', () => showRelative(1));
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showRelative(-1);
+    if (e.key === 'ArrowRight') showRelative(1);
+  });
+</script>
+
+</body>
+</html>
