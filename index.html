@@ -41,7 +41,6 @@
   .logo-img {
     width: 40px;
     height: 40px;
-    color: #f4b73f;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
@@ -265,6 +264,12 @@
   }
 
   /* FINAL CTA */
+  .instagram-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 8px;
+  } 
   .final-cta{
     background:linear-gradient(135deg, rgba(61,92,245,0.18), rgba(44,26,138,0.4));
     border:1px solid rgba(61,92,245,0.3); border-radius:28px; padding:64px 48px; text-align:center;
@@ -316,12 +321,8 @@
   <div class="wrap">
     <a href="#top" class="logo-link">
       <div class="logo">
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="20" cy="20" r="18" stroke="url(#g1)" stroke-width="2.5"/>
-          <path d="M20 2 V38 M2 20 H38 M6 8 C14 16 26 16 34 8 M6 32 C14 24 26 24 34 32" stroke="url(#g1)" stroke-width="1.6" fill="none"/>
-          <defs><linearGradient id="g1" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#f4b73f"/><stop offset="1" stop-color="#3d5cf5"/></linearGradient></defs>
-        </svg>
-        GAME HALL
+        <img src="assets/logo.svg" alt="Game Hall" class="logo-img">
+        <span>GAME HALL</span>
       </div>
     </a>
     <div class="nav-links">
@@ -595,13 +596,24 @@
   <div class="wrap">
     <div class="final-cta reveal" id="form">
       <h2>Ajuda-nos a construir o Game Hall</h2>
-      <p>Estamos a decidir onde e como lançar. Diz-nos de onde és e o que procuras leva 2 minutos e ajuda-nos a tomar as decisões certas.<br>Ajuda-nos tambem a decidir o design final e a priorizar funcionalidades. Junta-te à nossa comunidade no Discord e dá-nos feedback sobre o que queres ver na versão final.
-</p>
+      <p>
+        A <strong style="color:white;">Game Hall ainda está em desenvolvimento</strong> e queremos construí-la com quem realmente a vai utilizar.
+        <br><br>
+        Em menos de <strong style="color:var(--gold);">2 minutos</strong>, ajuda-nos a perceber onde existe maior procura, quais as modalidades mais praticadas e que funcionalidades devemos priorizar.
+        <br><br>
+        Depois, junta-te ao nosso <strong style="color:white;">Discord</strong> para acompanhar a evolução do projeto, dar feedback sobre o design e ajudar a construir a primeira versão da Game Hall.
+      </p>
       <div class="cta-row">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLnUikjcoE4sLuCFIvqnnw_nvyZfJOoFyMLN4igtMB8hRnWw/viewform?usp=dialog" target="_blank" rel="noopener" class="btn-primary">Ajuda-nos a construir a Game Hall</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLnUikjcoE4sLuCFIvqnnw_nvyZfJOoFyMLN4igtMB8hRnWw/viewform?usp=dialog" target="_blank" rel="noopener" class="btn-primary">Preencher formulário</a>
         <a href="https://discord.gg/RtUNGmVNU" target="_blank" rel="noopener" class="btn-secondary">
           <svg class="discord-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.01c.12.099.246.197.373.291a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.892.076.076 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.955 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
           Entrar no Discord
+        </a>
+        <a href="https://www.instagram.com/game.hallhg/" target="_blank" rel="noopener" class="btn-secondary">
+          <svg class="instagram-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9zm9.75 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+          </svg>
+          Seguir no Instagram
         </a>
       </div>
     </div>
@@ -611,24 +623,19 @@
 <footer>
   <div class="wrap">
     <a href="#top" class="logo-link">
-      <div class="logo" style="font-size:1rem;">
-        <svg viewBox="0 0 40 40" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="20" cy="20" r="18" stroke="url(#g2)" stroke-width="2.5"/>
-          <path d="M20 2 V38 M2 20 H38 M6 8 C14 16 26 16 34 8 M6 32 C14 24 26 24 34 32" stroke="url(#g2)" stroke-width="1.6" fill="none"/>
-          <defs><linearGradient id="g2" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#f4b73f"/><stop offset="1" stop-color="#3d5cf5"/></linearGradient></defs>
-        </svg>
-        GAME HALL
+      <div class="logo">
+        <img src="assets/logo.svg" alt="Game Hall" class="logo-img">
+        <span>GAME HALL</span>
       </div>
     </a>
     <div class="footer-links">
       <a href="#como-funciona">Como funciona</a>
       <a href="#quem-somos">Quem somos</a>
       <a href="#funcionalidades">Funcionalidades</a>
-      <a href="https://discord.gg/RtUNGmVNU" target="_blank" rel="noopener">Discord</a>
-      <a href="https://www.instagram.com/game.hallhg/" target="_blank" rel="noopener">Instagram</a>
-      <a href="mailto:game.hallhg@gmail.com">Email</a>
+      <a href="#preview">Preview</a>
+      <a href="mailto:game.hallhg@gmail.com">Contacto</a>
     </div>
-    <div class="foot-copy">© 2026 Game Hall.</div>
+    <div class="foot-copy">© 2026 Game Hall</div>
   </div>
 </footer>
 
