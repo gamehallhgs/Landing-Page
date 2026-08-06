@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Hall — Find pavilions. Gather players. Play.</title>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NRGMQZ1CZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NRGMQZ1CZJ');
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#080b2e;
+    --bg-mid:#141261;
+    --bg-purple:#2c1a8a;
+    --blue:#3d5cf5;
+    --blue-dark:#2540c9;
+    --blue-glow:rgba(61,92,245,0.45);
+    --gold:#f4b73f;
+    --ink:#ffffff;
+    --ink-muted:#b7bbe8;
+    --ink-faint:#7b7fb8;
+    --card:rgba(255,255,255,0.06);
+    --card-border:rgba(255,255,255,0.12);
+    --green:#3ecf7e;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .logo-img {
+    width: 40px;
+    height: 40px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(61,92,245,0.35), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(244,183,63,0.10), transparent 55%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 45%, var(--bg-purple) 100%);
+    color:var(--ink);
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.logo,.step-num{font-family:'Sora', sans-serif;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+  /* court-line texture, subtle */
+  .court-lines{
+    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.05;
+    background-image:
+      repeating-linear-gradient(90deg, transparent, transparent 119px, rgba(255,255,255,0.5) 120px),
+      repeating-linear-gradient(0deg, transparent, transparent 119px, rgba(255,255,255,0.5) 120px);
+  }
+
+  /* NAV */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(8,11,46,0.72); backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:74px;}
+  .logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.15rem; letter-spacing:0.02em;}
+  .logo svg{width:34px; height:34px;}
+  .nav-links{display:flex; align-items:center; gap:34px; font-size:0.95rem; color:var(--ink-muted); font-weight:500;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-cta{
+    background:linear-gradient(135deg, var(--blue), var(--blue-dark));
+    padding:11px 22px; border-radius:999px; font-weight:600; font-size:0.9rem;
+    box-shadow:0 6px 20px var(--blue-glow); transition:transform .15s ease, box-shadow .15s ease;
+    white-space:nowrap;
+  }
+  .nav-cta:hover{transform:translateY(-2px); box-shadow:0 10px 26px var(--blue-glow);}
+  @media(max-width:820px){ .nav-links{display:none;} }
+
+  /*LANGUAGE TOGGLE*/
+  .lang-toggle{
+    display:flex; align-items:center; gap:2px;
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);
+    border-radius:999px; padding:3px;
+  }
+  .lang-toggle a{
+    padding:6px 12px; border-radius:999px; font-size:0.78rem; font-weight:700;
+    color:var(--ink-faint); letter-spacing:0.02em; transition:background .15s ease, color .15s ease;
+  }
+  .lang-toggle a:hover:not(.active){color:var(--ink);}
+  .lang-toggle a.active{
+    background:linear-gradient(135deg, var(--blue), var(--blue-dark)); color:#fff;
+    box-shadow:0 3px 10px var(--blue-glow);
+  }
+
+  /* HERO */
+  .hero{position:relative; z-index:1; padding:96px 0 80px;}
+  .hero .wrap{display:grid; grid-template-columns:1.05fr 0.95fr; gap:50px; align-items:center;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(244,183,63,0.12); border:1px solid rgba(244,183,63,0.35);
+    color:var(--gold); font-size:0.82rem; font-weight:600; padding:7px 14px; border-radius:999px;
+    margin-bottom:22px;
+  }
+  .eyebrow span{width:6px; height:6px; border-radius:50%; background:var(--gold);}
+  h1{font-size:2.9rem; line-height:1.14; font-weight:800; letter-spacing:-0.01em; margin-bottom:20px;}
+  h1 .accent{color:var(--blue); position:relative;}
+  .hero p.sub{font-size:1.1rem; color:var(--ink-muted); line-height:1.65; max-width:520px; margin-bottom:22px;}
+  .slogan{
+    font-family:'Sora', sans-serif; font-weight:700; font-size:1.25rem; letter-spacing:0.01em;
+    color:var(--gold); margin-bottom:32px; display:flex; align-items:center; gap:10px;
+  }
+  .slogan::before{content:''; width:26px; height:3px; border-radius:2px; background:linear-gradient(90deg, var(--gold), var(--blue)); display:inline-block;}
+  .slogan .bang{color:var(--blue);}
+  .cta-row{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn-primary{
+    background:linear-gradient(135deg, var(--blue), var(--blue-dark));
+    padding:16px 28px; border-radius:999px; font-weight:700; font-size:1rem;
+    box-shadow:0 10px 30px var(--blue-glow); transition:transform .15s ease, box-shadow .15s ease;
+    display:inline-block;
+  }
+  .btn-primary:hover{transform:translateY(-3px); box-shadow:0 14px 34px var(--blue-glow);}
+  .btn-secondary{
+    padding:16px 28px; border-radius:999px; font-weight:700; font-size:1rem;
+    border:1.5px solid rgba(255,255,255,0.25); color:var(--ink);
+    transition:background .15s ease, border-color .15s ease;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-secondary:hover{background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.45);}
+  .trust-line{margin-top:26px; font-size:0.85rem; color:var(--ink-faint); display:flex; align-items:center; gap:10px;}
+
+  /* Hero lobby card (signature element) */
+  .lobby-card{
+    background:linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:22px; padding:26px; backdrop-filter:blur(10px);
+    box-shadow:0 30px 60px rgba(6,8,40,0.55);
+    animation:float 6s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);}}
+  .lobby-card-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;}
+  .lobby-title{font-family:'Sora',sans-serif; font-weight:700; font-size:1.15rem;}
+  .lobby-tag{display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--green); font-weight:600;}
+  .lobby-tag span{width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green);}
+  .lobby-meta{font-size:0.82rem; color:var(--ink-faint); margin-bottom:16px;}
+  .avatars{display:flex; margin-bottom:18px;}
+  .avatars .av{
+    width:38px; height:38px; border-radius:50%; margin-left:-10px; border:2px solid var(--bg-mid);
+    display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700;
+  }
+  .avatars .av:first-child{margin-left:0;}
+  .av.filled{background:linear-gradient(135deg,#5b7cfa,#2540c9); color:#fff;}
+  .av.empty{background:rgba(255,255,255,0.08); color:var(--ink-faint); border-style:dashed;}
+  .lobby-chat{
+    background:rgba(0,0,0,0.25); border-radius:12px; padding:12px 14px; font-size:0.78rem; color:var(--ink-muted);
+    line-height:1.7; margin-bottom:16px;
+  }
+  .lobby-chat b{color:var(--ink); font-weight:600;}
+  .lobby-bottom{display:flex; justify-content:space-between; align-items:center;}
+  .lobby-price{font-family:'Sora',sans-serif; font-weight:700; font-size:1.05rem;}
+  .lobby-price span{color:var(--ink-faint); font-weight:500; font-size:0.78rem;}
+  .lobby-btn{background:var(--gold); color:#2a1c04; font-weight:700; font-size:0.85rem; padding:9px 18px; border-radius:999px;}
+
+  /* SECTIONS shared */
+  section{position:relative; z-index:1; padding:90px 0;}
+  .section-head{max-width:600px; margin-bottom:56px;}
+  .section-head .kicker{color:var(--blue); font-weight:700; font-size:0.85rem; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px; display:block;}
+  .section-head h2{font-size:2.1rem; font-weight:800; line-height:1.25;}
+  .section-head p{color:var(--ink-muted); margin-top:14px; font-size:1.02rem; line-height:1.6;}
+  .center{text-align:center; margin-left:auto; margin-right:auto;}
+
+  /* WHY / PROBLEM */
+  .why{background:rgba(255,255,255,0.025); border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06);}
+  .why-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;}
+  .why-list{display:flex; flex-direction:column; gap:22px;}
+  .why-item{display:flex; gap:16px;}
+  .why-item .x{
+    flex-shrink:0; width:34px; height:34px; border-radius:10px; background:rgba(224,82,90,0.14);
+    color:#e0525a; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem;
+  }
+  .why-item p{color:var(--ink-muted); font-size:0.98rem; line-height:1.55; padding-top:5px;}
+  .why-item strong{color:var(--ink); display:block; margin-bottom:2px; font-family:'Sora',sans-serif; font-size:1rem;}
+
+  /* STEPS */
+  .steps-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
+  .step-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:18px; padding:32px 26px;
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .step-card:hover{transform:translateY(-6px); border-color:rgba(61,92,245,0.5);}
+  .step-num{font-size:2.3rem; font-weight:800; color:rgba(255,255,255,0.14); margin-bottom:14px;}
+  .step-card h3{font-family:'Sora',sans-serif; font-size:1.15rem; margin-bottom:10px;}
+  .step-card p{color:var(--ink-muted); font-size:0.92rem; line-height:1.6;}
+
+  /* FEATURES */
+  .features-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:22px;}
+  .feature-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px; padding:26px 22px;
+    transition:transform .2s ease, background .2s ease;
+  }
+  .feature-card:hover{transform:translateY(-4px); background:rgba(255,255,255,0.09);}
+  .feature-icon{width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; margin-bottom:16px;}
+  .feature-icon svg{width:22px; height:22px;}
+  .feature-card h3{font-family:'Sora',sans-serif; font-size:1.02rem; margin-bottom:8px;}
+  .feature-card p{color:var(--ink-muted); font-size:0.88rem; line-height:1.55;}
+  @media(max-width:980px){ .features-grid{grid-template-columns:repeat(2,1fr);} }
+
+  /* PREVIEW GALLERY */
+  .preview{background:rgba(0,0,0,0.15);}
+  .preview-head-row{display:flex; align-items:flex-end; justify-content:space-between; gap:20px;}
+  .preview-arrows{display:flex; gap:10px; flex-shrink:0; margin-bottom:56px;}
+  .preview-arrow{
+    width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.06); color:var(--ink); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .preview-arrow:hover{background:rgba(61,92,245,0.25); border-color:var(--blue); transform:translateY(-2px);}
+  .preview-arrow:active{transform:translateY(0);}
+  .preview-arrow svg{width:18px; height:18px;}
+  .preview-arrow.disabled{opacity:0.35; pointer-events:none;}
+  .preview-scroll-wrap{position:relative;}
+  .preview-scroll{
+    display:flex; gap:22px; overflow-x:auto; padding-bottom:20px; scroll-snap-type:x mandatory;
+    -ms-overflow-style:none; scrollbar-width:none; scroll-behavior:smooth;
+  }
+  .preview-scroll::-webkit-scrollbar{display:none;}
+  .preview-fade{
+    position:absolute; top:0; bottom:20px; pointer-events:none; z-index:2;
+  }
+  .preview-fade.left{left:0; background:linear-gradient(90deg, var(--bg-mid), transparent);}
+  .preview-fade.right{right:0; background:linear-gradient(-90deg, var(--bg-mid), transparent);}
+  @media(max-width:820px){ .preview-fade{display:none;} }
+  .preview-item{flex:0 0 auto; width:340px; scroll-snap-align:start;}
+  .browser-frame{
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:14px; overflow:hidden;
+    box-shadow:0 24px 50px rgba(0,0,0,0.4);
+  }
+  .browser-bar{display:flex; gap:6px; padding:10px 12px; background:rgba(0,0,0,0.25);}
+  .browser-bar span{width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,0.18);}
+  .browser-frame img{width:100%; display:block; cursor:zoom-in; transition:filter .2s ease;}
+  .browser-frame:hover img{filter:brightness(1.05);}
+  .preview-caption{margin-top:14px; font-size:0.9rem; color:var(--ink-muted); font-weight:500;}
+  .preview-caption b{color:var(--ink); display:block; font-family:'Sora',sans-serif; font-size:0.98rem; margin-bottom:2px;}
+
+  /* LIGHTBOX */
+  .lightbox{
+    position:fixed; inset:0; z-index:100; background:rgba(4,5,26,0.92); backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center; padding:40px; flex-direction:column;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:min(88vw, 720px); max-height:78vh; border-radius:14px; box-shadow:0 30px 70px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.12);}
+  .lightbox-caption{color:var(--ink-muted); font-size:0.95rem; margin-top:18px; text-align:center;}
+  .lightbox-caption b{color:var(--ink); font-family:'Sora',sans-serif;}
+  .lightbox-close{
+    position:absolute; top:26px; right:30px; width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:var(--ink);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s ease;
+  }
+  .lightbox-close:hover{background:rgba(255,255,255,0.18);}
+  .lightbox-nav{
+    position:absolute; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%;
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:var(--ink);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s ease;
+  }
+  .lightbox-nav:hover{background:rgba(61,92,245,0.35); border-color:var(--blue);}
+  .lightbox-nav.prev{left:24px;}
+  .lightbox-nav.next{right:24px;}
+  @media(max-width:640px){
+    .lightbox-nav{width:38px; height:38px;}
+    .lightbox-nav.prev{left:8px;} .lightbox-nav.next{right:8px;}
+    .lightbox-close{top:14px; right:14px;}
+  }
+
+  /* FINAL CTA */
+  .instagram-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 8px;
+  } 
+  .final-cta{
+    background:linear-gradient(135deg, rgba(61,92,245,0.18), rgba(44,26,138,0.4));
+    border:1px solid rgba(61,92,245,0.3); border-radius:28px; padding:64px 48px; text-align:center;
+    position:relative; overflow:hidden;
+  }
+  .final-cta::before{
+    content:''; position:absolute; width:400px; height:400px; border-radius:50%;
+    background:radial-gradient(circle, rgba(244,183,63,0.18), transparent 70%);
+    top:-150px; right:-100px;
+  }
+  .final-cta h2{font-size:2rem; font-weight:800; margin-bottom:16px; position:relative;}
+  .final-cta p{color:var(--ink-muted); max-width:520px; margin:0 auto 32px; font-size:1.02rem; line-height:1.6; position:relative;}
+  .final-cta .cta-row{justify-content:center; position:relative;}
+  .discord-icon{width:20px; height:20px;}
+
+  /* FOOTER */
+  footer{border-top:1px solid rgba(255,255,255,0.08); padding:40px 0;}
+  footer .wrap{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
+  .footer-links{display:flex; gap:26px; font-size:0.88rem; color:var(--ink-faint);}
+  .footer-links a:hover{color:var(--ink);}
+  .foot-copy{font-size:0.82rem; color:var(--ink-faint);}
+  .logo-group{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .foot-slogan{font-size:0.82rem; color:var(--ink-faint); font-style:italic; padding-left:14px; border-left:1px solid rgba(255,255,255,0.15);}
+
+  /* reveal animation */
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  @media(max-width:900px){
+    .hero .wrap{grid-template-columns:1fr;}
+    .why-grid{grid-template-columns:1fr;}
+    .steps-grid{grid-template-columns:1fr;}
+    .features-grid{grid-template-columns:1fr 1fr;}
+    h1{font-size:2.2rem;}
+    .final-cta{padding:48px 24px;}
+    .preview-head-row{flex-direction:column; align-items:flex-start;}
+    .preview-arrows{margin-bottom:24px;}
+  }
+  @media(prefers-reduced-motion: reduce){
+    .lobby-card{animation:none;}
+    .reveal{opacity:1; transform:none; transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="court-lines"></div>
+
+<nav>
+  <div class="wrap">
+    <a href="#top" class="logo-link">
+      <div class="logo">
+        <img src="../assets/logo.svg" alt="Game Hall" class="logo-img">
+        <span>GAME HALL</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="#about-us">About us</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#preview">Preview</a>
+      <a href="#community">Community</a>
+    </div>
+    <a href="#form" class="nav-cta">I want to follow along</a>
+    <div class="lang-toggle">
+        <a href="/">PT</a>
+        <a href="/en/" class="active">EN</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow"><span></span>Under development</div>
+      <h1>Mark the pavilion.<br>Gather the players.<br><span class="accent">Appear and play.</span></h1>
+      <p class="sub">Game Hall unify all sports pavilions into a single platform. Create public or private lobbies, invite players, chat in the group chat, and split payments automatically <br>End the endless WhatsApp groups, calls to 5 different pavilions, and running after those who didn't pay</p>
+      <div class="slogan">Your game starts here<span class="bang">!!</span></div>
+      <div class="cta-row">
+        <a href="#form" class="btn-primary">Help us shape the future of Game Hall</a>
+        <a href="#community" class="btn-secondary">
+          <svg class="discord-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.01c.12.099.246.197.373.291a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.892.076.076 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.955 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+          Get into the community
+        </a>
+      </div>
+      <div class="trust-line">All pavilions, all disciplines, one place</div>
+    </div>
+
+    <div class="lobby-card">
+      <div class="lobby-card-top">
+        <div>
+          <div class="lobby-title">Champions League da Wish</div>
+          <div class="lobby-meta">Pavilhão Desportivo da Meadela · 15€/h</div>
+        </div>
+        <div class="lobby-tag"><span></span>Public</div>
+      </div>
+      <div class="avatars">
+        <div class="av filled">PC</div>
+        <div class="av filled">AC</div>
+        <div class="av filled">JL</div>
+        <div class="av filled">JC</div>
+        <div class="av filled">MC</div>
+        <div class="av filled">SB</div>
+        <div class="av empty">?</div>
+        <div class="av empty">?</div>
+        <div class="av empty">?</div>
+        <div class="av empty">?</div>
+      </div>
+      <div class="lobby-chat">
+        <div><b>Jorge:</b> I have another guy coming</div>
+        <div><b>Simão:</b> What is this?</div>
+        <div><b>Paula:</b> Time to pay guys 🔥</div>
+      </div>
+      <div class="lobby-bottom">
+        <div class="lobby-price">6 / 10 <span>players</span></div>
+        <div class="lobby-btn"><a href="#form">Join the lobby</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about-us">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="kicker">About us</span>
+      <h2>Game Hall was born from a problem we all faced every week.</h2>
+    </div>
+
+    <div class="why-grid">
+      <div>
+        <h3 style="font-family:'Sora',sans-serif; margin-bottom:18px; font-size:1.4rem;">
+          Three friends. The same difficulty.
+        </h3>
+
+        <p style="color:var(--ink-muted); line-height:1.8; font-size:1rem;">
+          We are three university friends passionate about sports. Every week
+          we faced the exact same problem: finding a available pavilion
+          to play was complicated, but gathering enough players was
+          even more difficult.
+        </p>
+
+        <br>
+
+        <p style="color:var(--ink-muted); line-height:1.8; font-size:1rem;">
+          Between messages in WhatsApp groups, calls to various pavilions,
+          last-minute cancellations and the eternal question
+          <strong style="color:white;">"who forgot to pay?"</strong>,
+          we realized that organizing a simple game was taking more effort than
+          the game itself.
+        </p>
+
+        <br>
+
+        <p style="color:var(--ink-muted); line-height:1.8; font-size:1rem;">
+          That's when we thought: <strong style="color:white;">what if there was a platform that handled all this?</strong>
+          A single place where you could find pavilions, create games,
+          connect players and organize everything without complications.
+        </p>
+
+        <br>
+
+        <p style="color:var(--ink-muted); line-height:1.8; font-size:1rem;">
+          That's how <strong style="color:var(--gold);">Game Hall</strong> was born.
+          Not because we wanted to build just another application, but because we wanted to resolve
+          a problem we continue to face ourselves.
+        </p>
+      </div>
+
+      <div class="lobby-card" style="animation:none;">
+        <div class="lobby-card-top">
+          <div>
+            <div class="lobby-title">Our mission</div>
+            <div class="lobby-meta">Facilitate sports practice for everyone.</div>
+          </div>
+        </div>
+
+        <div class="why-list">
+          <div class="why-item">
+            <div class="x" style="background:rgba(62,207,126,.15);color:var(--green);">✓</div>
+            <p><strong>Find spaces</strong>All pavilions gathered in a single place.</p>
+          </div>
+
+          <div class="why-item">
+            <div class="x" style="background:rgba(62,207,126,.15);color:var(--green);">✓</div>
+            <p><strong>Connect players</strong>Create public or private games in seconds.</p>
+          </div>
+
+          <div class="why-item">
+            <div class="x" style="background:rgba(62,207,126,.15);color:var(--green);">✓</div>
+            <p><strong>Eliminate complications</strong>Less time organizing. More time playing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="why reveal" id="porque">
+  <div class="wrap why-grid">
+    <div>
+      <span class="section-head kicker">Porquê o Game Hall</span>
+      <h2>Marcar um jogo com amigos não devia ser o trabalho mais difícil da semana</h2>
+    </div>
+    <div class="why-list">
+      <div class="why-item">
+        <div class="x">✕</div>
+        <p><strong>Sem grupos de WhatsApp intermináveis</strong>Já sabemos: "quem falta pagar?", "confirma quem vai", repetido todas as semanas.</p>
+      </div>
+      <div class="why-item">
+        <div class="x">✕</div>
+        <p><strong>Sem ligar a 5 pavilhões diferentes</strong>Disponibilidade, preços e comodidades dispersos, sem forma fácil de comparar.</p>
+      </div>
+      <div class="why-item">
+        <div class="x">✕</div>
+        <p><strong>Sem correr atrás de quem não pagou</strong>A divisão do valor fica resolvida logo na criação do lobby — igual para todos ou por conta do organizador.</p>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<section id="how-it-works">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="kicker">How it works</span>
+      <h2>Three steps, no complications</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <div class="step-num">01</div>
+        <h3>Find your pavilion</h3>
+        <p>Filter by district, municipality, or discipline and see availability, prices, and amenities in one place.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">02</div>
+        <h3>Create or join a lobby</h3>
+        <p>Define how many players are missing, make the lobby public or private, and invite friends directly.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">03</div>
+        <h3>Combine in the chat and play</h3>
+        <p>Combine the details in the lobby chat, decide how to split the payment, and show up to play.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="kicker">Features</span>
+      <h2>Built for those who only want to play</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h3>All pavilions, one single place</h3>
+        <p>Compare prices, amenities, and reviews of pavilions near you.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg></div>
+        <h3>Public or private lobbies</h3>
+        <p>Join players around you or close the game only for your group.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+        <h3>Integrated chat in the lobby</h3>
+        <p>Combine the details of the game without leaving the app or exchanging contacts.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+        <h3>Flexible payment options</h3>
+        <p>Divide the cost equally among players or cover it all yourself — you decide when creating the lobby.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="preview" id="preview">
+  <div class="wrap">
+    <div class="preview-head-row">
+      <div class="section-head">
+        <span class="kicker">Preview</span>
+        <h2>A sneak peek at what we're building</h2>
+        <p>Prototype in development <br> The final design may and should change based on your feedback.</p>
+      </div>
+      <div class="preview-arrows">
+        <button class="preview-arrow" id="prevArrow" aria-label="Ver imagem anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="preview-arrow" id="nextArrow" aria-label="Ver imagem seguinte">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="preview-scroll-wrap">
+      <div class="preview-fade left"></div>
+      <div class="preview-fade right"></div>
+      <div class="preview-scroll" id="previewScroll">
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="../assets/home.png" alt="Game Hall main page" class="lightbox-trigger" data-title="Home" data-desc="Pavilions in spotlight near you"></div>
+          <div class="preview-caption"><b>Home</b>Pavilions in spotlight near you</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="../assets/search.png" alt="Search pavilions" class="lightbox-trigger" data-title="Search pavilion" data-desc="Filter by district, municipality and discipline"></div>
+          <div class="preview-caption"><b>Search pavilion</b>Filter by district, municipality and discipline</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="../assets/details.png" alt="Pavilion details" class="lightbox-trigger" data-title="Pavilion details" data-desc="Availability, amenities, and reviews"></div>
+          <div class="preview-caption"><b>Pavilion details</b>Availability, amenities, and reviews</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="../assets/lobbies.png" alt="Open lobbies" class="lightbox-trigger" data-title="Open lobbies" data-desc="Join a game near you"></div>
+          <div class="preview-caption"><b>Open lobbies</b>Join a game near you</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="../assets/lobby.png" alt="Lobby with chat" class="lightbox-trigger" data-title="Inside the lobby" data-desc="Chat, invites, and payment"></div>
+          <div class="preview-caption"><b>Inside the lobby</b>Chat, invites, and payment</div>
+        </div>
+        <div class="preview-item">
+          <div class="browser-frame"><div class="browser-bar"><span></span><span></span><span></span></div><img src="../assets/profile.png" alt="User profile" class="lightbox-trigger" data-title="Your profile" data-desc="Booking history and game partners"></div>
+          <div class="preview-caption"><b>Your profile</b>Booking history and game partners</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="community" style="padding-top:0;">
+  <div class="wrap">
+    <div class="final-cta reveal" id="form">
+      <h2>Help us build Game Hall</h2>
+      <p>
+        <strong style="color:white;">Game Hall is still in development</strong> and we want to build it with those who will actually use it.
+        <br><br>
+        In less than <strong style="color:var(--gold);">2 minutes</strong>, help us understand where there is greatest demand, which disciplines are most practiced, and which features we should prioritize.
+        <br><br>
+        Afterwards, join our <strong style="color:white;">Discord</strong> to follow the project's evolution, provide feedback on the design, and help build the first version of Game Hall.
+      </p>
+      <div class="cta-row">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLnUikjcoE4sLuCFIvqnnw_nvyZfJOoFyMLN4igtMB8hRnWw/viewform?usp=dialog" target="_blank" rel="noopener" class="btn-primary">Fill out form</a>
+        <a href="https://discord.gg/RtUNGmVNU" target="_blank" rel="noopener" class="btn-secondary">
+          <svg class="discord-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.01c.12.099.246.197.373.291a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.892.076.076 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.955 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+          Join Discord
+        </a>
+        <a href="https://www.instagram.com/game.hallhg/" target="_blank" rel="noopener" class="btn-secondary">
+          <svg class="instagram-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9zm9.75 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+          </svg>
+          Follow on Instagram
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="#top" class="logo-link">
+      <div class="logo">
+        <img src="../assets/logo.svg" alt="Game Hall" class="logo-img">
+        <span>GAME HALL</span>
+      </div>
+    </a>
+    <div class="footer-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#about-us">About us</a>
+      <a href="#features">Features</a>
+      <a href="#preview">Preview</a>
+      <a href="mailto:game.hallhg@gmail.com">Contact</a>
+    </div>
+    <div class="foot-copy">© 2026 Game Hall</div>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous image">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav next" id="lightboxNext" aria-label="Next image">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+  <div class="lightbox-caption"><b id="lightboxTitle"></b><br><span id="lightboxDesc"></span></div>
+</div>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal, .step-card, .feature-card');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.15});
+  revealEls.forEach(el=>{ el.classList.add('reveal'); io.observe(el); });
+
+  // Preview gallery arrows
+  const scrollEl = document.getElementById('previewScroll');
+  const prevArrow = document.getElementById('prevArrow');
+  const nextArrow = document.getElementById('nextArrow');
+  function scrollByCard(dir){
+    const card = scrollEl.querySelector('.preview-item');
+    const gap = 22;
+    const distance = (card ? card.offsetWidth : 340) + gap;
+    scrollEl.scrollBy({ left: dir * distance, behavior: 'smooth' });
+  }
+  prevArrow.addEventListener('click', ()=> scrollByCard(-1));
+  nextArrow.addEventListener('click', ()=> scrollByCard(1));
+  function updateArrowState(){
+    const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth - 4;
+    prevArrow.classList.toggle('disabled', scrollEl.scrollLeft <= 4);
+    nextArrow.classList.toggle('disabled', scrollEl.scrollLeft >= maxScroll);
+  }
+  scrollEl.addEventListener('scroll', updateArrowState);
+  window.addEventListener('resize', updateArrowState);
+  updateArrowState();
+
+  // Lightbox
+  const triggers = Array.from(document.querySelectorAll('.lightbox-trigger'));
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxTitle = document.getElementById('lightboxTitle');
+  const lightboxDesc = document.getElementById('lightboxDesc');
+  let currentIndex = 0;
+
+  function openLightbox(index){
+    currentIndex = index;
+    const t = triggers[currentIndex];
+    lightboxImg.src = t.src;
+    lightboxImg.alt = t.alt;
+    lightboxTitle.textContent = t.dataset.title;
+    lightboxDesc.textContent = t.dataset.desc;
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function showRelative(dir){
+    currentIndex = (currentIndex + dir + triggers.length) % triggers.length;
+    openLightbox(currentIndex);
+  }
+
+  triggers.forEach((img, i) => img.addEventListener('click', () => openLightbox(i)));
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lightboxPrev').addEventListener('click', () => showRelative(-1));
+  document.getElementById('lightboxNext').addEventListener('click', () => showRelative(1));
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showRelative(-1);
+    if (e.key === 'ArrowRight') showRelative(1);
+  });
+</script>
+
+</body>
+</html>

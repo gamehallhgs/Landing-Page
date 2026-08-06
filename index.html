@@ -84,6 +84,22 @@
   }
   .nav-cta:hover{transform:translateY(-2px); box-shadow:0 10px 26px var(--blue-glow);}
   @media(max-width:820px){ .nav-links{display:none;} }
+  
+  /*LANGUAGE TOGGLE*/
+  .lang-toggle{
+    display:flex; align-items:center; gap:2px;
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);
+    border-radius:999px; padding:3px;
+  }
+  .lang-toggle a{
+    padding:6px 12px; border-radius:999px; font-size:0.78rem; font-weight:700;
+    color:var(--ink-faint); letter-spacing:0.02em; transition:background .15s ease, color .15s ease;
+  }
+  .lang-toggle a:hover:not(.active){color:var(--ink);}
+  .lang-toggle a.active{
+    background:linear-gradient(135deg, var(--blue), var(--blue-dark)); color:#fff;
+    box-shadow:0 3px 10px var(--blue-glow);
+  }
 
   /* HERO */
   .hero{position:relative; z-index:1; padding:96px 0 80px;}
@@ -333,6 +349,10 @@
       <a href="#comunidade">Comunidade</a>
     </div>
     <a href="#form" class="nav-cta">Quero acompanhar</a>
+    <div class="lang-toggle">
+        <a href="/" class="active">PT</a>
+        <a href="/en/">EN</a>
+    </div>
   </div>
 </nav>
 
@@ -427,7 +447,7 @@
         <br>
 
         <p style="color:var(--ink-muted); line-height:1.8; font-size:1rem;">
-          Foi assim que nasceu o <strong style="color:var(--gold);">Game Hall</strong>.
+          Foi assim que nasceu a <strong style="color:var(--gold);">Game Hall</strong>.
           Não porque queríamos criar mais uma aplicação, mas porque queríamos resolver
           um problema que nós próprios continuamos a sentir.
         </p>
